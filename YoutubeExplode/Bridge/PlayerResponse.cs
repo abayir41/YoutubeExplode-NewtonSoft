@@ -2,8 +2,8 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using System.Text.Json;
 using System.Text.RegularExpressions;
+using Newtonsoft.Json.Linq;
 using YoutubeExplode.Utils;
 using YoutubeExplode.Utils.Extensions;
 
@@ -11,9 +11,9 @@ namespace YoutubeExplode.Bridge;
 
 internal partial class PlayerResponse
 {
-    private readonly JsonElement _content;
+    private readonly JToken _content;
 
-    private JsonElement? Playability => Memo.Cache(this, () =>
+    private JToken? Playability => Memo.Cache(this, () =>
         _content.GetPropertyOrNull("playabilityStatus")
     );
 
@@ -38,7 +38,7 @@ internal partial class PlayerResponse
         string.Equals(PlayabilityStatus, "ok", StringComparison.OrdinalIgnoreCase)
     );
 
-    private JsonElement? Details => Memo.Cache(this, () =>
+    private JToken? Details => Memo.Cache(this, () =>
         _content.GetPropertyOrNull("videoDetails")
     );
 
@@ -61,12 +61,29 @@ internal partial class PlayerResponse
     );
 
     public DateTimeOffset? UploadDate => Memo.Cache(this, () =>
-        _content
+    {
+        var result = _content
             .GetPropertyOrNull("microformat")?
             .GetPropertyOrNull("playerMicroformatRenderer")?
-            .GetPropertyOrNull("uploadDate")?
-            .GetDateTimeOffset()
-    );
+            .GetPropertyOrNull("uploadDate");
+
+        if (result != null)
+        {
+            var stringVal = result.Value<string>();
+            if (stringVal != null)
+            {
+                return DateTimeOffset.Parse(stringVal);
+            }
+            else
+            {
+                return default;
+            }
+        }
+        else
+        {
+            return default;
+        }
+    });
 
     public TimeSpan? Duration => Memo.Cache(this, () =>
         Details?
@@ -143,7 +160,7 @@ internal partial class PlayerResponse
             .NullIfWhiteSpace()
     );
 
-    private JsonElement? StreamingData => Memo.Cache(this, () =>
+    private JToken? StreamingData => Memo.Cache(this, () =>
         _content.GetPropertyOrNull("streamingData")
     );
 
@@ -194,14 +211,14 @@ internal partial class PlayerResponse
         Array.Empty<ClosedCaptionTrackData>()
     );
 
-    public PlayerResponse(JsonElement content) => _content = content;
+    public PlayerResponse(JToken content) => _content = content;
 }
 
 internal partial class PlayerResponse
 {
     public class ClosedCaptionTrackData
     {
-        private readonly JsonElement _content;
+        private readonly JToken _content;
 
         public string? Url => Memo.Cache(this, () =>
             _content
@@ -237,7 +254,7 @@ internal partial class PlayerResponse
                 .StartsWith("a.", StringComparison.OrdinalIgnoreCase) ?? false
         );
 
-        public ClosedCaptionTrackData(JsonElement content) => _content = content;
+        public ClosedCaptionTrackData(JToken content) => _content = content;
     }
 }
 
@@ -245,7 +262,7 @@ internal partial class PlayerResponse
 {
     public class StreamData : IStreamData
     {
-        private readonly JsonElement _content;
+        private readonly JToken _content;
 
         public int? Itag => Memo.Cache(this, () =>
             _content
@@ -364,7 +381,7 @@ internal partial class PlayerResponse
                 .GetInt32OrNull()
         );
 
-        public StreamData(JsonElement content) => _content = content;
+        public StreamData(JToken content) => _content = content;
     }
 }
 

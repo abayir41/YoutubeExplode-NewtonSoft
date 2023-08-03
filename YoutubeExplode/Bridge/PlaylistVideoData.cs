@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text.Json;
+using Newtonsoft.Json.Linq;
 using YoutubeExplode.Utils;
 using YoutubeExplode.Utils.Extensions;
 
@@ -9,7 +9,7 @@ namespace YoutubeExplode.Bridge;
 
 internal class PlaylistVideoData
 {
-    private readonly JsonElement _content;
+    private readonly JToken _content;
 
     public int? Index => Memo.Cache(this, () =>
         _content
@@ -40,7 +40,7 @@ internal class PlaylistVideoData
             .ConcatToString()
     );
 
-    private JsonElement? AuthorDetails => Memo.Cache(this, () =>
+    private JToken? AuthorDetails => Memo.Cache(this, () =>
         _content
             .GetPropertyOrNull("longBylineText")?
             .GetPropertyOrNull("runs")?
@@ -102,5 +102,5 @@ internal class PlaylistVideoData
         Array.Empty<ThumbnailData>()
     );
 
-    public PlaylistVideoData(JsonElement content) => _content = content;
+    public PlaylistVideoData(JToken content) => _content = content;
 }

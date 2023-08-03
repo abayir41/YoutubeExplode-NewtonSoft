@@ -1,4 +1,4 @@
-﻿using System.Text.Json;
+﻿using Newtonsoft.Json.Linq;
 using YoutubeExplode.Utils;
 using YoutubeExplode.Utils.Extensions;
 
@@ -6,9 +6,9 @@ namespace YoutubeExplode.Bridge;
 
 internal class ThumbnailData
 {
-    private readonly JsonElement _content;
+    private readonly JToken _content;
 
-    public ThumbnailData(JsonElement content) => _content = content;
+    public ThumbnailData(JToken content) => _content = content;
 
     public string? Url => Memo.Cache(this, () =>
         _content.GetPropertyOrNull("url")?.GetStringOrNull()

@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text.Json;
+using Newtonsoft.Json.Linq;
 using YoutubeExplode.Utils;
 using YoutubeExplode.Utils.Extensions;
 
@@ -9,12 +9,12 @@ namespace YoutubeExplode.Bridge;
 
 internal partial class SearchResponse
 {
-    private readonly JsonElement _content;
+    private readonly JToken _content;
 
     // Search response is incredibly inconsistent (with at least 5 variations),
     // so we employ descendant searching, which is inefficient but resilient.
 
-    private JsonElement? ContentRoot => Memo.Cache(this, () =>
+    private JToken? ContentRoot => Memo.Cache(this, () =>
         _content.GetPropertyOrNull("contents") ??
         _content.GetPropertyOrNull("onResponseReceivedCommands")
     );
@@ -54,14 +54,14 @@ internal partial class SearchResponse
             .GetStringOrNull()
     );
 
-    public SearchResponse(JsonElement content) => _content = content;
+    public SearchResponse(JToken content) => _content = content;
 }
 
 internal partial class SearchResponse
 {
     internal class VideoData
     {
-        private readonly JsonElement _content;
+        private readonly JToken _content;
 
         public string? Id => Memo.Cache(this, () =>
             _content
@@ -84,7 +84,7 @@ internal partial class SearchResponse
                 .ConcatToString()
         );
 
-        private JsonElement? AuthorDetails => Memo.Cache(this, () =>
+        private JToken? AuthorDetails => Memo.Cache(this, () =>
             _content
                 .GetPropertyOrNull("longBylineText")?
                 .GetPropertyOrNull("runs")?
@@ -140,7 +140,7 @@ internal partial class SearchResponse
             Array.Empty<ThumbnailData>()
         );
 
-        public VideoData(JsonElement content) => _content = content;
+        public VideoData(JToken content) => _content = content;
     }
 }
 
@@ -148,7 +148,7 @@ internal partial class SearchResponse
 {
     public class PlaylistData
     {
-        private readonly JsonElement _content;
+        private readonly JToken _content;
 
         public string? Id => Memo.Cache(this, () =>
             _content
@@ -171,7 +171,7 @@ internal partial class SearchResponse
                 .ConcatToString()
         );
 
-        private JsonElement? AuthorDetails => Memo.Cache(this, () =>
+        private JToken? AuthorDetails => Memo.Cache(this, () =>
             _content
                 .GetPropertyOrNull("longBylineText")?
                 .GetPropertyOrNull("runs")?
@@ -204,7 +204,7 @@ internal partial class SearchResponse
             Array.Empty<ThumbnailData>()
         );
 
-        public PlaylistData(JsonElement content) => _content = content;
+        public PlaylistData(JToken content) => _content = content;
     }
 }
 
@@ -212,7 +212,7 @@ internal partial class SearchResponse
 {
     public class ChannelData
     {
-        private readonly JsonElement _content;
+        private readonly JToken _content;
 
         public string? Id => Memo.Cache(this, () =>
             _content
@@ -246,7 +246,7 @@ internal partial class SearchResponse
             Array.Empty<ThumbnailData>()
         );
 
-        public ChannelData(JsonElement content) => _content = content;
+        public ChannelData(JToken content) => _content = content;
     }
 }
 

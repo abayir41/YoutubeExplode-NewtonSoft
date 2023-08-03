@@ -30,19 +30,19 @@ internal static class CollectionExtensions
         }
     }
 
-    public static T? ElementAtOrNull<T>(this IEnumerable<T> source, int index) where T : struct
+    public static T? ElementAtOrNull<T>(this IEnumerable<T> source, int index)
     {
         var sourceAsList = source as IReadOnlyList<T> ?? source.ToArray();
         return index < sourceAsList.Count
             ? sourceAsList[index]
-            : null;
+            : default;
     }
 
-    public static T? FirstOrNull<T>(this IEnumerable<T> source) where T : struct
+    public static T? FirstOrNull<T>(this IEnumerable<T> source)
     {
         foreach (var i in source)
             return i;
 
-        return null;
+        return default;
     }
 }

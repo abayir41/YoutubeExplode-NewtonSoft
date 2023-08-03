@@ -1,9 +1,9 @@
 using System;
 using System.Linq;
-using System.Text.Json;
 using System.Text.RegularExpressions;
 using AngleSharp.Dom;
 using AngleSharp.Html.Dom;
+using Newtonsoft.Json.Linq;
 using YoutubeExplode.Utils;
 using YoutubeExplode.Utils.Extensions;
 
@@ -55,7 +55,7 @@ internal partial class VideoWatchPage
             .ParseLongOrNull()
     );
 
-    private JsonElement? PlayerConfig => Memo.Cache(this, () =>
+    private JToken? PlayerConfig => Memo.Cache(this, () =>
         _content
             .GetElementsByTagName("script")
             .Select(e => e.Text())

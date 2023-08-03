@@ -1,7 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text.Json;
+using Newtonsoft.Json.Linq;
 using YoutubeExplode.Utils;
 using YoutubeExplode.Utils.Extensions;
 
@@ -9,23 +9,23 @@ namespace YoutubeExplode.Bridge;
 
 internal partial class PlaylistBrowseResponse : IPlaylistData
 {
-    private readonly JsonElement _content;
+    private readonly JToken _content;
 
-    private JsonElement? Sidebar => Memo.Cache(this, () =>
+    private JToken? Sidebar => Memo.Cache(this, () =>
         _content
             .GetPropertyOrNull("sidebar")?
             .GetPropertyOrNull("playlistSidebarRenderer")?
             .GetPropertyOrNull("items")
     );
 
-    private JsonElement? SidebarPrimary => Memo.Cache(this, () =>
+    private JToken? SidebarPrimary => Memo.Cache(this, () =>
         Sidebar?
             .EnumerateArrayOrNull()?
             .ElementAtOrNull(0)?
             .GetPropertyOrNull("playlistSidebarPrimaryInfoRenderer")
     );
 
-    private JsonElement? SidebarSecondary => Memo.Cache(this, () =>
+    private JToken? SidebarSecondary => Memo.Cache(this, () =>
         Sidebar?
             .EnumerateArrayOrNull()?
             .ElementAtOrNull(1)?
@@ -51,7 +51,7 @@ internal partial class PlaylistBrowseResponse : IPlaylistData
             .ConcatToString()
     );
 
-    private JsonElement? AuthorDetails => Memo.Cache(this, () =>
+    private JToken? AuthorDetails => Memo.Cache(this, () =>
         SidebarSecondary?
             .GetPropertyOrNull("videoOwner")?
             .GetPropertyOrNull("videoOwnerRenderer")
@@ -117,7 +117,7 @@ internal partial class PlaylistBrowseResponse : IPlaylistData
         Array.Empty<ThumbnailData>()
     );
 
-    public PlaylistBrowseResponse(JsonElement content) => _content = content;
+    public PlaylistBrowseResponse(JToken content) => _content = content;
 }
 
 internal partial class PlaylistBrowseResponse

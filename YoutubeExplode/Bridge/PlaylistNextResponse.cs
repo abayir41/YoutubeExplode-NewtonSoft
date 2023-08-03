@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text.Json;
+using Newtonsoft.Json.Linq;
 using YoutubeExplode.Utils;
 using YoutubeExplode.Utils.Extensions;
 
@@ -9,9 +9,9 @@ namespace YoutubeExplode.Bridge;
 
 internal partial class PlaylistNextResponse : IPlaylistData
 {
-    private readonly JsonElement _content;
+    private readonly JToken _content;
 
-    private JsonElement? ContentRoot => Memo.Cache(this, () =>
+    private JToken? ContentRoot => Memo.Cache(this, () =>
         _content
             .GetPropertyOrNull("contents")?
             .GetPropertyOrNull("twoColumnWatchNextResults")?
@@ -67,7 +67,7 @@ internal partial class PlaylistNextResponse : IPlaylistData
             .GetStringOrNull()
     );
 
-    public PlaylistNextResponse(JsonElement content) => _content = content;
+    public PlaylistNextResponse(JToken content) => _content = content;
 }
 
 internal partial class PlaylistNextResponse
